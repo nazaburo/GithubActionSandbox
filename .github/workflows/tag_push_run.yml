@@ -3,9 +3,8 @@ on:
   push:
     tags:
       - '**'
-    tags-ignore:
-      - '**-beta'
-      - '**-beta*'
+      - '!**-beta'
+      - '!**-beta*'
 
 jobs:
   build:
