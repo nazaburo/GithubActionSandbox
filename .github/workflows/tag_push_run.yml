@@ -14,12 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - name: Get tag name
+      - name: Create Release page
+        id: create_release
         run: |
           echo "TAG_NAME=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
-      - name: Create Release page
-        id: create_release
       - uses: release-drafter/release-drafter@v6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
