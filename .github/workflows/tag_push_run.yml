@@ -17,16 +17,16 @@ jobs:
       - name: Get tag name
         run: |
           echo "TAG_NAME=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-#
-#      - name: Create Release page
-#        id: create_release
-#      - uses: release-drafter/release-drafter@v6
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          tag: ${{ env.TAG_NAME }}
-#          name: Release ${{ env.TAG_NAME }}
-#
+
+      - name: Create Release page
+        id: create_release
+      - uses: release-drafter/release-drafter@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag: ${{ env.TAG_NAME }}
+          name: Release ${{ env.TAG_NAME }}
+
 #      - name: Zip the release
 #        run: |
 #          echo "create dummy zip file"
