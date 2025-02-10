@@ -3,16 +3,43 @@ on:
   push:
     tags:
       - '**'
-      - '!**-beta'
-      - '!**-beta*'
   workflow_dispatch:
 
+permissions:
+  contents: write
+  pull-requests: read
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     timeout-minutes: 60
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Get tag name
+        run: |
+          echo "TAG_NAME=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+      - name: Create Release page
+        id: create_release
+      - uses: release-drafter/release-drafter@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag: ${{ env.TAG_NAME }}
+          name: Release ${{ env.TAG_NAME }}
+
+      - name: Zip the release
+        run: |
+          echo "create dummy zip file"
+          echo "dummy" > dummy.txt
+          zip dummy.zip dummy.txt
+      - name: Upload the release
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dummy.zip
+          asset_name: dummy.zip
+          asset_content_type: application/zip
+
