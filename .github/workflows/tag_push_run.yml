@@ -13,33 +13,32 @@ jobs:
   createZipQas:
     if: contains(github.ref, 'qas')
     runs-on: ubuntu-latest
-    outputs:
-      zip_path: ${{ steps.create_zip_qas.outputs.zip_path }}
     steps:
       - name: Zip the release
         id: create_zip_qas
         run: |
           echo "create dummy zip file"
           echo "qas" > dummy.txt
-          zip dummy.zip dummy.txt
-          echo "::set-output name=zip_path::$(pwd)/dummy.zip"
+          zip dummyqas.zip dummy.txt
+      - name: Upload ZIP as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: dummyqas.zip
+          path: dummyqas.zip
 
   createZipStg:
     if: contains(github.ref, 'stg')
     runs-on: ubuntu-latest
-    outputs:
-      zip_path: ${{ steps.create_zip_stg.outputs.zip_path }}
     steps:
       - name: Zip the release
         id: create_zip
         run: |
           echo "create dummy zip file"
           echo "stg" > dummy.txt
-          zip dummy.zip dummy.txt
-          echo "::set-output name=zip_path::$(pwd)/dummy.zip"
+          zip dummystg.zip dummy.txt
 
   createGitHubRelease:
-    if: ${{ always() }}
+    if: needs.createZipQas.result == 'success' || needs.createZipStg.result == 'success'
     needs: [ createZipQas, createZipStg ]
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -59,11 +58,16 @@ jobs:
           name: Release ${{ env.TAG_NAME }}
 
   uploadAssetsQas:
-    if: ${{ always() && contains(github.ref, 'qas') }}
-    needs: [createZipQas, createGitHubRelease]
+    if: ${{ contains(github.ref, 'qas') }}
+    needs: [createGitHubRelease]
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
+      - name: Download STG artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: dummyqas.zip
+          path: .
       - name: Upload the release
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
@@ -71,16 +75,21 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.createGitHubRelease.outputs.upload_url }}
-          asset_path: ${{ needs.createZipQas.outputs.zip_path }}
+          asset_path: ./dummyqas.zip
           asset_name: dummyqas.zip
           asset_content_type: application/zip
 
   uploadAssetsStg:
-    if: ${{ always() && contains(github.ref, 'stg') }}
+    if: ${{ contains(github.ref, 'stg') }}
     needs: [createZipStg, createGitHubRelease]
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
+      - name: Download STG artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: dummystg.zip
+          path: .
       - name: Upload the release
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
@@ -88,6 +97,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.createGitHubRelease.outputs.upload_url }}
-          asset_path: ${{ needs.createZipStg.outputs.zip_path }}
+          asset_path: ./dummystg.zip
           asset_name: dummystg.zip
           asset_content_type: application/zip
