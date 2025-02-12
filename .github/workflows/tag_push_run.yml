@@ -64,7 +64,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Download STG artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: dummyqas.zip
           path: .
