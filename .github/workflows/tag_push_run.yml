@@ -10,7 +10,20 @@ permissions:
   pull-requests: read
 
 jobs:
+  createZip:
+    runs-on: ubuntu-latest
+    outputs:
+      zip_path: ${{ steps.create_zip.outputs.zip_path }}
+    steps:
+      - name: Zip the release
+        run: |
+          echo "create dummy zip file"
+          echo "dummy" > dummy.txt
+          zip dummy.zip dummy.txt
+          echo "::set-output name=zip_path::$(pwd)/dummy.zip"
+
   createGitHubRelease:
+    needs: createZip
     runs-on: ubuntu-latest
     timeout-minutes: 60
     outputs:
@@ -29,7 +42,7 @@ jobs:
           name: Release ${{ env.TAG_NAME }}
 
   uploadAssets:
-    needs: createGitHubRelease
+    needs: [createZip, createGitHubRelease]
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -45,7 +58,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.createGitHubRelease.outputs.upload_url }}
-          asset_path: ./dummy.zip
+          asset_path: ${{ needs.createZip.outputs.zip_path }}
           asset_name: dummy.zip
           asset_content_type: application/zip
 
