@@ -16,6 +16,7 @@ jobs:
       zip_path: ${{ steps.create_zip.outputs.zip_path }}
     steps:
       - name: Zip the release
+        id: create_zip
         run: |
           echo "create dummy zip file"
           echo "dummy" > dummy.txt
