@@ -28,10 +28,9 @@ jobs:
 
       - name: Zip the release
         run: |
-          echo "create dummy zip file"
-          echo ${{ steps.create_release.outputs.upload_url }}
           echo "dummy" > dummy.txt
-          zip dummy.zip dummy.txt
+          echo "dummy" > dummy2.txt
+          echo "dummy" > dummy3.txt
       - name: Upload the release
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
@@ -39,7 +38,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./dummy.zip
+          asset_path: ./.
           asset_name: dummy.zip
           asset_content_type: application/zip
 
