@@ -15,11 +15,11 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Create Release page
-        id: create_release
         run: |
           echo "TAG_NAME=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
       - uses: release-drafter/release-drafter@v6
+        id: create_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
