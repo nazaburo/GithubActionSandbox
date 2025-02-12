@@ -42,7 +42,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ createGitHubRelease.steps.create_release.outputs.upload_url }}
           asset_path: ./dummy.zip
           asset_name: dummy.zip
           asset_content_type: application/zip
