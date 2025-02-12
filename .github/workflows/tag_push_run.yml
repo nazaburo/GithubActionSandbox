@@ -26,11 +26,11 @@ jobs:
           tag: ${{ env.TAG_NAME }}
           name: Release ${{ env.TAG_NAME }}
 
-#      - name: Zip the release
-#        run: |
-#          echo "create dummy zip file"
-#          echo "dummy" > dummy.txt
-#          zip dummy.zip dummy.txt
+      - name: Zip the release
+        run: |
+          echo "create dummy zip file"
+          echo "dummy" > dummy.txt
+          zip dummy.zip dummy.txt
 #      - name: Upload the release
 #        id: upload-release-asset
 #        uses: actions/upload-release-asset@v1
