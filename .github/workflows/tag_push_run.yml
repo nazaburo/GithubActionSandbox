@@ -58,8 +58,8 @@ jobs:
           name: Release ${{ env.TAG_NAME }}
 
   uploadAssetsQas:
+    if: ${{ always() && contains(github.ref, 'qas') }}
     needs: [createGitHubRelease]
-    if: ${{ contains(github.ref, 'qas') }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
