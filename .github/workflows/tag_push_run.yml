@@ -21,7 +21,7 @@ jobs:
           echo "qas" > dummy.txt
           zip dummyqas.zip dummy.txt
       - name: Upload ZIP as artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: dummyqas.zip
           path: dummyqas.zip
