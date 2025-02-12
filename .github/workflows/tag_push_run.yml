@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   createZip:
+    if: contains(github.ref, 'qas')
     runs-on: ubuntu-latest
     outputs:
       zip_path: ${{ steps.create_zip.outputs.zip_path }}
