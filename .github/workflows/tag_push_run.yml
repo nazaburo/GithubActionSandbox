@@ -29,6 +29,7 @@ jobs:
       - name: Zip the release
         run: |
           echo "create dummy zip file"
+          echo ${{ steps.create_release.outputs.upload_url }}
           echo "dummy" > dummy.txt
           zip dummy.zip dummy.txt
       - name: Upload the release
