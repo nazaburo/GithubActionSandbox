@@ -39,7 +39,8 @@ jobs:
           echo "::set-output name=zip_path::$(pwd)/dummy.zip"
 
   createGitHubRelease:
-    if: needs.createZipQas.result == 'success' || needs.createZipStg.result == 'success'
+    if: ${{ always() }}
+    needs: [ createZipQas, createZipStg ]
     runs-on: ubuntu-latest
     timeout-minutes: 60
     outputs:
