@@ -75,7 +75,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.createGitHubRelease.outputs.upload_url }}
-          asset_path: ${{ needs.createZip.outputs.zip_path }}
+          asset_path: ${{ needs.createZipQas.outputs.zip_path }}
           asset_name: dummyqas.zip
           asset_content_type: application/zip
 
@@ -96,6 +96,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.createGitHubRelease.outputs.upload_url }}
-          asset_path: ${{ needs.createZip.outputs.zip_path }}
+          asset_path: ${{ needs.createZipStg.outputs.zip_path }}
           asset_name: dummystg.zip
           asset_content_type: application/zip
