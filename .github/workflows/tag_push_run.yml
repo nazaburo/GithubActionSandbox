@@ -10,22 +10,36 @@ permissions:
   pull-requests: read
 
 jobs:
-  createZip:
+  createZipQas:
     if: contains(github.ref, 'qas')
     runs-on: ubuntu-latest
     outputs:
-      zip_path: ${{ steps.create_zip.outputs.zip_path }}
+      zip_path: ${{ steps.create_zip_qas.outputs.zip_path }}
+    steps:
+      - name: Zip the release
+        id: create_zip_qas
+        run: |
+          echo "create dummy zip file"
+          echo "qas" > dummy.txt
+          zip dummy.zip dummy.txt
+          echo "::set-output name=zip_path::$(pwd)/dummy.zip"
+
+  createZipStg:
+    if: contains(github.ref, 'stg')
+    runs-on: ubuntu-latest
+    outputs:
+      zip_path: ${{ steps.create_zip_stg.outputs.zip_path }}
     steps:
       - name: Zip the release
         id: create_zip
         run: |
           echo "create dummy zip file"
-          echo "dummy" > dummy.txt
+          echo "stg" > dummy.txt
           zip dummy.zip dummy.txt
           echo "::set-output name=zip_path::$(pwd)/dummy.zip"
 
   createGitHubRelease:
-    needs: createZip
+    if: needs.createZipQas.result == 'success' || needs.createZipStg.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     outputs:
@@ -43,8 +57,8 @@ jobs:
           tag: ${{ env.TAG_NAME }}
           name: Release ${{ env.TAG_NAME }}
 
-  uploadAssets:
-    needs: [createZip, createGitHubRelease]
+  uploadAssetsQas:
+    needs: [createZipQas, createGitHubRelease]
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -61,6 +75,26 @@ jobs:
         with:
           upload_url: ${{ needs.createGitHubRelease.outputs.upload_url }}
           asset_path: ${{ needs.createZip.outputs.zip_path }}
-          asset_name: dummy.zip
+          asset_name: dummyqas.zip
           asset_content_type: application/zip
 
+  uploadAssetsStg:
+    needs: [createZipStg, createGitHubRelease]
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Zip the release
+        run: |
+          echo "create dummy zip file"
+          echo "dummy" > dummy.txt
+          zip dummy.zip dummy.txt
+      - name: Upload the release
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.createGitHubRelease.outputs.upload_url }}
+          asset_path: ${{ needs.createZip.outputs.zip_path }}
+          asset_name: dummystg.zip
+          asset_content_type: application/zip
