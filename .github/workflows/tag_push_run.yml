@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   createZipQas:
-    if: contains(github.ref, 'qas') == false && contains(github.ref, 'stg') == false
+    if: contains(github.ref, 'qas')
     runs-on: ubuntu-latest
     steps:
       - name: Zip the release
