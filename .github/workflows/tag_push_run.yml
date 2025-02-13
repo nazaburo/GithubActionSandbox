@@ -58,7 +58,7 @@ jobs:
           name: Release ${{ env.TAG_NAME }}
 
   uploadAssetsQas:
-    if: ${{ always() && contains(github.ref, 'qas') }}
+    if: always() && contains(github.ref, 'qas')
     needs: [createGitHubRelease]
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -80,7 +80,7 @@ jobs:
           asset_content_type: application/zip
 
   uploadAssetsStg:
-    if: ${{ contains(github.ref, 'stg') }}
+    if: always() && contains(github.ref, 'stg')
     needs: [createZipStg, createGitHubRelease]
     runs-on: ubuntu-latest
     timeout-minutes: 60
